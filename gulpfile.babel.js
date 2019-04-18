@@ -51,7 +51,7 @@ const browserSync = BrowserSync.create();
         .bundle()
           //log errors if they happen
         .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-        .pipe(source(fileName))
+        .pipe(source(fileName.toString())) //fileName should be String
 //        .pipe(streamify(uglify({mangle:false})))
         .pipe(streamify(uglify()))
         .pipe(gulp.dest('./dist'));
@@ -81,40 +81,41 @@ const browserSync = BrowserSync.create();
 This is the one that makes a live server with autorefresh for all your debuggy needs.
 Helper function. You probably don't want to call it directly.
  */
-gulp.task('serve', ['less', 'jsdev'], function() {
+function liveServer(done) {
+  browserSync.init({
+      server: "./",
+      online:true,
+      open:false
+  });
+  gulp.watch("./less/**/*.less", gulp.series('less'));
+  gulp.watch("./dist/*.js").on('change', browserSync.reload);
+  gulp.watch("./*.html").on('change', browserSync.reload);
+  done();
+}
 
-    browserSync.init({
-        server: "./",
-        online:true,
-        open:false
-    });
-
-    gulp.watch("./less/**/*.less", ['less']);
-    gulp.watch("./dist/*.js").on('change', browserSync.reload);
-    gulp.watch("./*.html").on('change', browserSync.reload);
-});
+gulp.task('serve', liveServer);
 
 /*
 Compiles less but excludes partials starting with underscore, e.g. _loader.less
 Helper function. You probably don't ever need to call it directly.
  */
-gulp.task('less', function() {
+
+function gulpLess() {
   return gulp.src(['./less/**/*.less', '!./less/**/_*'])
       .pipe(less())
       .pipe(minifyCSS())
       .pipe(gulp.dest('./dist'))
       .pipe(browserSync.stream());
-});
+}
+
+gulp.task('less', gulpLess);
 
 //These are the tasks most likely to be run by a user
 
 /*
 Starts server for dev use. To use in the command line run `gulp dev`
  */
-gulp.task('dev', [
-  'serve', //includes css
-  'jsdev'
-], function() {
+function finalStepDev(done) {
   gutil.log(gutil.colors.yellow('| =================================================='));
   gutil.log(gutil.colors.yellow('| Congrats, it looks like everything is working!'));
   gutil.log(gutil.colors.yellow('| Browsersync is running on the ports below and will'));
@@ -124,20 +125,21 @@ gulp.task('dev', [
   gutil.log(gutil.colors.yellow('| To run tests while working, open a new terminal and run:'));
   gutil.log(gutil.colors.yellow('| mocha --watch'));
   gutil.log(gutil.colors.yellow('| =================================================='));
-});
+  done();
+}
+
+gulp.task('dev', gulp.series(gulp.parallel('less', 'jsdev'), gulp.parallel('serve'), finalStepDev));
 
 
 /*
 Build for prod use. Just run `gulp`, and the results will appear in the dist folder :)
  */
-gulp.task('default', [
-  'less',
-  'js',
-  'slim'
-], function() {
+function finalStep(done) {
   gutil.log(gutil.colors.green('| =====================|'));
   gutil.log(gutil.colors.green('|   Project built! :)  |'));
   gutil.log(gutil.colors.green('| =====================|'));
-});
+  done();
+}
+gulp.task('default', gulp.series(gulp.parallel('less','js','slim'), finalStep));
 
 //todo: add error handling to the messages above?
