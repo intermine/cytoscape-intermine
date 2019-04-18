@@ -128,7 +128,7 @@ function finalStepDev(done) {
   done();
 }
 
-gulp.task('dev', gulp.series(gulp.parallel('less', 'jsdev'), gulp.parallel('serve'), finalStepDev));
+gulp.task('dev', gulp.series(gulp.parallel('less', 'jsdev', 'slim'), gulp.parallel('serve'), finalStepDev));
 
 
 /*
