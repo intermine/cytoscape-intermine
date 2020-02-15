@@ -1,12 +1,10 @@
 const path = require('path');
-const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
-
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './js/main.js',
+    watch: true,
+    entry: {
+        main: './js/main.js',
+    },
     output: {
         path: path.resolve( __dirname, 'build' ),
         filename: './bundle.js',
@@ -18,27 +16,20 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.js$/i,
                 exclude: (/node_modules/, /bower_components/),
-                use: [
-                    {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
-                      }
-                    },
-                    {
-                        loader: 'shebang-loader'
-                    }
-                ]
+                use: {loader: 'shebang-loader'}
+                
             },
             {
-                test: /\.less$/,
+                test: /\.less$/i,
+                exclude: /node_modules/,
                 use: [ 
-                    "style-loader",
-                    "css-loader",
-                    "less-loader",
-                ]
+                    'style-loader',
+                    'css-loader', 
+                    'less-loader'
+                ],
+                
             },
             {
                 test: /\.html$/i,
@@ -46,10 +37,5 @@ module.exports = {
             }
         ],
         },
-    plugins: [ 
-        new MiniCssExtractPlugin({
-            filename: "/build/style.css"
-        }),
-    ],
-    watch: true
+    plugins: [],
   }

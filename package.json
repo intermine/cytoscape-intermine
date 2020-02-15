@@ -64,6 +64,8 @@
   },
   "homepage": "https://github.com/yochannah/cytoscape-intermine#readme",
   "dependencies": {
+    "buble": "^0.19.8",
+    "buble-loader": "^0.5.1",
     "cytoscape": "^3.5.3",
     "ejs-loader": "^0.3.3",
     "es6-promise": "^4.2.6",

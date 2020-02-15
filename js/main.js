@@ -11,6 +11,9 @@ var cymineDataFormatter = require('./dataFormatter'),
   Promise = require('es6-promise').Promise,
   cymineDisplay = require('./ui');
 
+  // Requiring LESS Styles for Compiling when bundling
+  require('../less/style.less');
+  
 
 function Cymine(args) {
 
@@ -93,8 +96,7 @@ function Cymine(args) {
         ui.init();
 
         //check that the service and query looks ok, or error if not.
-        mine = validateServiceRoot();
-
+        var mine = validateServiceRoot();
         if (prepQuery() && mine) {
           //get the data from the mine
           var q = mine.records(query).then(function(response) {
@@ -147,6 +149,9 @@ function Cymine(args) {
       } else {
         reject('bad query');
       }
+    });
+    promise['catch'](function(err) {
+      console.log(err.message)
     });
     return promise;
   }
