@@ -6,7 +6,7 @@ module.exports = {
         main: './js/main.js',
     },
     output: {
-        path: path.resolve( __dirname, 'build' ),
+        path: path.resolve( __dirname, 'dist' ),
         filename: './bundle.js',
         library: 'cymine',
         libraryTarget: 'var'
